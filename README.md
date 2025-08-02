@@ -1,9 +1,6 @@
-----------------------------------------------------------------------------------------
-Hello,
-this is my first game on Python.
-I hope you'll enjoy it.
 
-The game is in german, but i'll add a English Version soon!
+this is my first game on Python.
+I hope you'll enjoy it
 ----------------------------------------------------------------------------------------
 How to play:
 W A S D: to move around
@@ -21,5 +18,7 @@ download the Zip-folder, where the .exe file is and run it inside the folder.
 If you see something in the code that i could do better, feel free to let me know :)
 I am still a beginner so its just a simple game.
 I'll try better in the future.
+
+the game is in german, but i'll add a English Version soon!
 
 ----------------------------------------------------------------------------------------
