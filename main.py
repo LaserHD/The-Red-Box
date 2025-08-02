@@ -1,11 +1,12 @@
 import pygame
 import datetime
 import random
+from sounds import *
+from consolelog import *
 
 #Fenster Öffnen
 pygame.init()
-now = datetime.datetime.now()
-print(f"[{now.strftime("%H:%M:%S")} INFO]: Spiel wurde gestartet")
+log("Das Spiel wurde Gestartet")
 
 #Fenster Einstellungen
 screen_width = 800
@@ -18,11 +19,11 @@ points = 0
 printed5 = True
 printed10 = True
 printed20 = True
+printedwin = True
 
 #Bilder laden und setzen
 icon = pygame.image.load("Textures/Red_Box.png")
 pygame.display.set_icon(icon)
-Prank = pygame.image.load("Textures/Du_Opfer_Text.png")
 player_default = pygame.image.load("Textures/Red_box_default.png").convert()
 player_left = pygame.image.load("Textures/Red_box_left.png").convert()
 player_right = pygame.image.load("Textures/Red_box_right.png").convert()
@@ -37,9 +38,9 @@ Punkte_Text = pygame.font.SysFont("impact", 30)
 winner_text = pygame.font.SysFont("arial", 40, True)
 
 #Texte rendern
-Punkte_Text = Punkte_Text.render(f"Punkte: {points}", True, "black")
+Punkte_Text = Punkte_Text.render(f"Punkte: {points}", True, "white")
 Punkte_Text_rect = Punkte_Text.get_rect()
-winner_text = winner_text.render("Du hast gewonnen!", True, "black", "yellow")
+winner_text = winner_text.render("Du hast Gewonnen", True, "white")
 winner_text_rect = winner_text.get_rect()
 
 #Postionieren von Texten
@@ -51,13 +52,19 @@ player = player_default.get_rect()
 player.center = (screen_width//2, 250)
 food = pygame.Rect((50, 50, 20, 20))
 
+#Timer
+clock = pygame.time.Clock()
+counter, text = 25, '25'.rjust(3)
+pygame.time.set_timer(pygame.USEREVENT, 1000)
+font = pygame.font.SysFont('arial', 30)
+
 #Game loop
 running = True
 clock = pygame.time.Clock()
 while running:
 
     #Hintergrund-Farbe
-    screen.fill(("silver"))
+    screen.fill((50, 50, 50))
 
     #Geschwindigkeit in FPS
     clock.tick(300)
@@ -66,6 +73,7 @@ while running:
     pygame.draw.rect(screen, ("yellow"), food)
     screen.blit(player_default, player)
     screen.blit(Punkte_Text, Punkte_Text_rect)
+    screen.blit(font.render(text, True, ("white")), (screen_width-50, 10), )
 
     #Wenn eine Taste gedrückt wird
     key = pygame.key.get_pressed()
@@ -81,8 +89,6 @@ while running:
     if key[pygame.K_s] and player.y < screen_heigth - 50:
         player.move_ip(0, 1)
         screen.blit(player_down, player)
-    if key[pygame.K_p]:
-        screen.blit(Prank, Prank.get_rect(center = screen.get_rect().center))
 
     #Wenn "player" mit "food" kollidiert
     if player.colliderect(food):
@@ -90,49 +96,47 @@ while running:
         food.y = random.randint(0, screen_heigth - 50)
         points += 1
         Punkte_Text = pygame.font.SysFont("impact", 30)
-        Punkte_Text = Punkte_Text.render(f"Punkte: {points}", True, "black")
+        Punkte_Text = Punkte_Text.render(f"Punkte: {points}", True, "white")
+        coinsound()
 
     #Wenn eine Gewisse Anzahl Punkte erziehlt wird
     if points >= 5:
-        screen.blit(winner_text, winner_text_rect)
-        now = datetime.datetime.now()
         if printed5:
-            print(f"[{now.strftime("%H:%M:%S")} INFO]: Spieler hat 5 Punkte erziehlt")
+            log("Spieler hat 5 Punkte erziehlt")
             printed5 = False
     if points >= 10:
-        winner_text = pygame.font.SysFont("arial", 40, True)
-        winner_text = winner_text.render(f"Bro spielt noch\nweiter als hätte er noch\nnicht gewonnen!", True, "black", "yellow")
-        now = datetime.datetime.now()
         if printed10:
-            print(f"[{now.strftime("%H:%M:%S")} INFO]: Spieler hat 10 Punkte erziehlt")
+            log("Spieler hat 10 Punkte erziehlt")
             printed10 = False
-    if points == 20:
-        winner_text = pygame.font.SysFont("arial", 40, True)
-        winner_text = winner_text.render(f"Du kannst von vorne anfangen\nwenn du noch\nein Punkt holst!", True, "black", "yellow")
-        now = datetime.datetime.now()
+    if points >= 20:
+        screen.blit(winner_text, winner_text_rect)
         if printed20:
-            print(f"[{now.strftime("%H:%M:%S")} INFO]: Spieler hat 20 Punkte erziehlt")
+            log("Spieler hat 20 Punkte erziehlt")
             printed20 = False
-    if points == 21:
-        points = 0
-        now = datetime.datetime.now()
-        print(f"[{now.strftime("%H:%M:%S")} INFO]: Spieler hat 21 Punkte erziehlt")
-        print(f"[{now.strftime("%H:%M:%S")} INFO]: Das Spiel wurde zurückgesetzt")
-
 
     #Event-Handler -> Was passiert wenn Bildschirm geschlossen wird
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if key[pygame.K_ESCAPE]:
+            running = False
+        if event.type == pygame.USEREVENT:
+            counter -= 1
+            text = str(counter).rjust(3)
+            if counter == 0:
+                log("Spieler hat verloren")
+                points = 0
+                log("Das Spiel wurde zurückgesetzt")
+                counter = 25
+        if points >= 20 and counter > 0 and printedwin == True:
+            log("Spieler hat gewonnen")
+            printedwin = False
 
     #Aktualisiert den Frame
-    pygame.display.update()
-
-#Wenn Fenster Geschlossen wird
-now = datetime.datetime.now()
-print(f"[{now.strftime("%H:%M:%S")} INFO]: <------------------->")
-print(f"[{now.strftime("%H:%M:%S")} INFO]: |Bro hat Geschlossen|")
-print(f"[{now.strftime("%H:%M:%S")} INFO]: <------------------->")
+    pygame.display.flip()
 
 #Code wird beendet
 pygame.quit()
+log("<------------------->")
+log("|Bro hat Geschlossen|")
+log("<------------------->")
