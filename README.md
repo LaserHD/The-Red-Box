@@ -3,6 +3,7 @@ Hello,
 this is my first game on Python.
 I hope you'll enjoy it.
 
+The game is in german, but i'll add a English Version soon!
 ----------------------------------------------------------------------------------------
 How to play:
 W A S D: to move around
