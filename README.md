@@ -19,6 +19,4 @@ If you see something in the code that i could do better, feel free to let me kno
 I am still a beginner so its just a simple game.
 I'll try better in the future.
 
-the game is in german, but i'll add a English Version soon!
-
 ----------------------------------------------------------------------------------------
